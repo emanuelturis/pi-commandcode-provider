@@ -25,6 +25,7 @@ import {
 	type Model,
 	type Provider,
 	type ProviderEnv,
+	type ThinkingLevelMap,
 } from "@earendil-works/pi-ai";
 // pi resolves bundled pi-ai imports for installed extensions by name, and only
 // the root, /compat, /oauth and /providers/all are mapped. The /api/*.lazy
@@ -73,7 +74,24 @@ const FAMILIES: { match: RegExp; reasoning: boolean; vision: boolean }[] = [
 	{ match: /^claude-/, reasoning: true, vision: true },
 	{ match: /^gpt-/, reasoning: true, vision: true },
 	{ match: /^google\//, reasoning: true, vision: true },
+	{ match: /^meta\//, reasoning: true, vision: true },
 ];
+
+/**
+ * Thinking-level maps per model, in pi's level names, used until /models
+ * reports them. `null` marks a level the gateway rejects. Muse Ember takes the
+ * same levels as Muse Spark 1.3: low through max, without minimal.
+ */
+const THINKING_LEVELS: Record<string, ThinkingLevelMap> = {
+	"meta/muse-ember": {
+		minimal: null,
+		low: "low",
+		medium: "medium",
+		high: "high",
+		xhigh: "xhigh",
+		max: "max",
+	},
+};
 
 /**
  * Claude models from Opus 4.6, Sonnet 4.6 and Fable 5 onward reject
@@ -122,6 +140,7 @@ function toModel(item: CommandCodeModelListItem): Model<Api> | undefined {
 			: NO_COST,
 		contextWindow: item.context_length || FALLBACK_CONTEXT_WINDOW,
 		maxTokens: item.max_output_tokens || FALLBACK_MAX_TOKENS,
+		...(THINKING_LEVELS[item.id] ? { thinkingLevelMap: THINKING_LEVELS[item.id] } : {}),
 		// CMD_ZDR=1 enforces zero-data-retention routing, the same switch the
 		// Command Code CLI has. The gateway then serves the request from a
 		// zero-data-retention upstream, or fails with 422 instead of using an

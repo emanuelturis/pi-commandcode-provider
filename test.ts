@@ -43,13 +43,14 @@ async function testModelMapping(): Promise<void> {
 				modalities: { input: ["text", "image"] },
 				max_output_tokens: 8_192,
 			},
+			{ id: "meta/muse-ember", supported_endpoints: ["/chat/completions"], context_length: 1_048_576 },
 			{ id: "vendor/unsupported", supported_endpoints: ["/unknown"] },
 		],
 	};
 	const url = `data:application/json,${encodeURIComponent(JSON.stringify(fixture))}`;
 	const models = await loadModels(url);
 
-	assert.equal(models.length, 4);
+	assert.equal(models.length, 5);
 	assert.deepEqual(
 		models.map(({ id, api, reasoning, input }) => ({ id, api, reasoning, input })),
 		[
@@ -62,12 +63,21 @@ async function testModelMapping(): Promise<void> {
 				reasoning: true,
 				input: ["text", "image"],
 			},
+			{ id: "meta/muse-ember", api: "openai-completions", reasoning: true, input: ["text", "image"] },
 		],
 	);
 	assert.equal(models[0]?.contextWindow, 200_000);
 	assert.equal(models[3]?.maxTokens, 8_192);
 	assert.deepEqual(models[0]?.compat, { forceAdaptiveThinking: true });
 	assert.deepEqual(models[2]?.compat, { supportsDeveloperRole: false, maxTokensField: "max_tokens" });
+	assert.deepEqual(models[4]?.thinkingLevelMap, {
+		minimal: null,
+		low: "low",
+		medium: "medium",
+		high: "high",
+		xhigh: "xhigh",
+		max: "max",
+	});
 }
 
 async function main(): Promise<void> {

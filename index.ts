@@ -75,6 +75,7 @@ const FAMILIES: { match: RegExp; reasoning: boolean; vision: boolean }[] = [
 	{ match: /^gpt-/, reasoning: true, vision: true },
 	{ match: /^google\//, reasoning: true, vision: true },
 	{ match: /^meta\//, reasoning: true, vision: true },
+	{ match: /^deepseek\//, reasoning: true, vision: true },
 ];
 
 /**

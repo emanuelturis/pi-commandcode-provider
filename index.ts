@@ -91,6 +91,14 @@ const THINKING_LEVELS: Record<string, ThinkingLevelMap> = {
 		xhigh: "xhigh",
 		max: "max",
 	},
+	"deepseek/deepseek-v4.1-flash": {
+		minimal: null,
+		low: "low",
+		medium: null,
+		high: "high",
+		xhigh: null,
+		max: "max",
+	},
 };
 
 /**
